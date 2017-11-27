@@ -11,7 +11,7 @@ exports.mysql = function(){
 	return {
 		HOST:'127.0.0.1',
 		USER:'root',
-		PSWD:'123456',//如果连接失败，请检查这里
+		PSWD:'lovedyy',//如果连接失败，请检查这里
 		DB:'db_scmj',//如果连接失败，请检查这里
 		PORT:3306,
 	}
@@ -24,7 +24,7 @@ exports.account_server = function(){
 		HALL_IP:HALL_IP,
 		HALL_CLIENT_PORT:HALL_CLIENT_PORT,
 		ACCOUNT_PRI_KEY:ACCOUNT_PRI_KEY,
-		
+
 		//
 		DEALDER_API_IP:LOCAL_IP,
 		DEALDER_API_PORT:12581,
@@ -49,7 +49,7 @@ exports.hall_server = function(){
 exports.game_server = function(){
 	return {
 		SERVER_ID:"001",
-		
+
 		//暴露给大厅服的HTTP端口号
 		HTTP_PORT:9003,
 		//HTTP TICK的间隔时间，用于向大厅服汇报情况
@@ -61,7 +61,7 @@ exports.game_server = function(){
 		HALL_PORT:HALL_ROOM_PORT,
 		//与大厅服协商好的通信加密KEY
 		ROOM_PRI_KEY:ROOM_PRI_KEY,
-		
+
 		//暴露给客户端的接口
 		CLIENT_IP:HALL_IP,
 		CLIENT_PORT:10000,

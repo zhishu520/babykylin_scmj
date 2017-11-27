@@ -1,0 +1,139 @@
+module.js:491
+    throw err;
+    ^
+
+Error: Cannot find module '../configs_mac.js'
+    at Function.Module._resolveFilename (module.js:489:15)
+    at Function.Module._load (module.js:439:25)
+    at Module.require (module.js:517:17)
+    at require (internal/module.js:11:18)
+    at Object.<anonymous> (/Users/zhijianzhang/github/babykylin_scmj/server/game_server/app.js:5:15)
+    at Module._compile (module.js:573:30)
+    at Object.Module._extensions..js (module.js:584:10)
+    at Module.load (module.js:507:32)
+    at tryModuleLoad (module.js:470:12)
+    at Function.Module._load (module.js:462:3)
+account server is listening on 9000
+dealer api is listening on localhost:12581
+events.js:182
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE :::9000
+    at Object._errnoException (util.js:1041:11)
+    at _exceptionWithHostPort (util.js:1064:20)
+    at Server.setupListenHandle [as _listen2] (net.js:1322:14)
+    at listenInCluster (net.js:1370:12)
+    at Server.listen (net.js:1466:7)
+    at Function.listen (/Users/zhijianzhang/github/babykylin_scmj/server/node_modules/express/lib/application.js:617:24)
+    at Object.exports.start (/Users/zhijianzhang/github/babykylin_scmj/server/account_server/account_server.js:19:6)
+    at Object.<anonymous> (/Users/zhijianzhang/github/babykylin_scmj/server/account_server/app.js:11:4)
+    at Module._compile (module.js:573:30)
+    at Object.Module._extensions..js (module.js:584:10)
+client service is listening on port 9001
+room service is listening on localhost:9002
+events.js:182
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE :::9001
+    at Object._errnoException (util.js:1041:11)
+    at _exceptionWithHostPort (util.js:1064:20)
+    at Server.setupListenHandle [as _listen2] (net.js:1322:14)
+    at listenInCluster (net.js:1370:12)
+    at Server.listen (net.js:1466:7)
+    at Function.listen (/Users/zhijianzhang/github/babykylin_scmj/server/node_modules/express/lib/application.js:617:24)
+    at Object.exports.start (/Users/zhijianzhang/github/babykylin_scmj/server/hall_server/client_service.js:315:6)
+    at Object.<anonymous> (/Users/zhijianzhang/github/babykylin_scmj/server/hall_server/app.js:10:16)
+    at Module._compile (module.js:573:30)
+    at Object.Module._extensions..js (module.js:584:10)
+game server is listening on localhost:9003
+game server is listening on 10000
+127.0.0.1:10000
+5f07171cb498d75fd82ecd0de85df3a9
+account server is listening on 9000
+dealer api is listening on localhost:12581
+account server is listening on 9000
+dealer api is listening on localhost:12581
+client service is listening on port 9001
+game server is listening on localhost:9003
+room service is listening on localhost:9002
+game server is listening on 10000
+game server registered.
+	id:127.0.0.1:10000
+	addr:127.0.0.1
+	http port:9003
+	socket clientport:10000
+127.0.0.1:10000
+5f07171cb498d75fd82ecd0de85df3a9
+invalid parameters
+problem with request: connect ECONNREFUSED 127.0.0.1:9002
+client service is listening on port 9001
+game server is listening on localhost:9003
+room service is listening on localhost:9002
+account server is listening on 9000
+dealer api is listening on localhost:12581
+game server is listening on 10000
+game server registered.
+	id:127.0.0.1:10000
+	addr:127.0.0.1
+	http port:9003
+	socket clientport:10000
+127.0.0.1:10000
+5f07171cb498d75fd82ecd0de85df3a9
+invalid parameters
+{ type: 'xzdd',
+  baseScore: 1,
+  zimo: 0,
+  jiangdui: false,
+  hsz: false,
+  dianganghua: 0,
+  menqing: false,
+  tiandihu: false,
+  maxFan: 4,
+  maxGames: 4,
+  creator: 13 }
+INSERT INTO t_rooms(uuid,id,base_info,ip,port,create_time)                 VALUES('1511710177975194072','194072','{"type":"xzdd","baseScore":1,"zimo":0,"jiangdui":false,"hsz":false,"dianganghua":0,"menqing":false,"tiandihu":false,"maxFan":4,"maxGames":4,"creator":13}','127.0.0.1',10000,1511710178)
+1511710177975194072
+{ userid: '13',
+  name: '诸葛不输',
+  roomid: '194072',
+  sign: 'c18f7ef3b8f1d729ef41c64ee3a5cad1' }
+c18f7ef3b8f1d729ef41c64ee3a5cad1
+{ token: 'c391c662924089cc10f7ef64350cf3df',
+  errcode: 0,
+  errmsg: 'ok' }
+UPDATE t_users SET roomid = "194072" WHERE userid = "13"
+194072
+c391c662924089cc10f7ef64350cf3df
+1511710178013
+9766ee89ea9900f4800ceb6393d1da87
+22
+{ userid: '13',
+  name: '诸葛不输',
+  roomid: '194072',
+  sign: 'c18f7ef3b8f1d729ef41c64ee3a5cad1' }
+c18f7ef3b8f1d729ef41c64ee3a5cad1
+{ token: '5d984556e855d8c2c478e2ce4dce35bb',
+  errcode: 0,
+  errmsg: 'ok' }
+UPDATE t_users SET roomid = "194072" WHERE userid = "13"
+194072
+5d984556e855d8c2c478e2ce4dce35bb
+1511710243897
+cf0e30524a433148546bf0bb19ee61b7
+{ userid: '13',
+  name: '诸葛不输',
+  roomid: '194072',
+  sign: 'c18f7ef3b8f1d729ef41c64ee3a5cad1' }
+c18f7ef3b8f1d729ef41c64ee3a5cad1
+{ token: '49c80dd34c400a8146b164a0cc62ba33',
+  errcode: 0,
+  errmsg: 'ok' }
+UPDATE t_users SET roomid = "194072" WHERE userid = "13"
+194072
+49c80dd34c400a8146b164a0cc62ba33
+1511715152499
+5b8fce84889b1eb1308ad9e41b95a7e4
+UPDATE t_users SET roomid = null WHERE userid = "13"
+DELETE FROM t_rooms WHERE id = '194072'

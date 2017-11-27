@@ -6,10 +6,9 @@ var creatingRooms = {};
 var userLocation = {};
 var totalRooms = 0;
 
-var DI_FEN = [1,2,5];
-var MAX_FAN = [3,4,5];
-var JU_SHU = [4,8];
-var JU_SHU_COST = [2,3];
+var BEI_SHU = [1, 2];
+var JU_SHU = [8, 16];
+var JU_SHU_COST = [1,2];
 
 function generateRoomId(){
 	var roomId = "";
@@ -26,32 +25,21 @@ function constructRoomFromDb(dbdata){
 		numOfGames:dbdata.num_of_turns,
 		createTime:dbdata.create_time,
 		nextButton:dbdata.next_button,
-		seats:new Array(4),
+		seats:new Array(5),
 		conf:JSON.parse(dbdata.base_info)
 	};
 
+	roomInfo.gameMgr = require("./gamemgr_biji");
 
-	if(roomInfo.conf.type == "xlch"){
-		roomInfo.gameMgr = require("./gamemgr_xlch");
-	}
-	else{
-		roomInfo.gameMgr = require("./gamemgr_xzdd");
-	}
 	var roomId = roomInfo.id;
 
-	for(var i = 0; i < 4; ++i){
+	for(var i = 0; i < 5; ++i){
 		var s = roomInfo.seats[i] = {};
 		s.userId = dbdata["user_id" + i];
 		s.score = dbdata["user_score" + i];
 		s.name = dbdata["user_name" + i];
 		s.ready = false;
 		s.seatIndex = i;
-		s.numZiMo = 0;
-		s.numJiePao = 0;
-		s.numDianPao = 0;
-		s.numAnGang = 0;
-		s.numMingGang = 0;
-		s.numChaJiao = 0;
 
 		if(s.userId > 0){
 			userLocation[s.userId] = {
@@ -65,33 +53,32 @@ function constructRoomFromDb(dbdata){
 	return roomInfo;
 }
 
+
+/*
+{
+	string type,
+	int jushu ,
+	bool xiqian ,
+	bool sanqing ,
+	int beishu ,
+	bool AA,
+}
+*/
+
+
 exports.createRoom = function(creator,roomConf,gems,ip,port,callback){
-	if(
-		roomConf.type == null
-		|| roomConf.difen == null
-		|| roomConf.zimo == null
-		|| roomConf.jiangdui == null
-		|| roomConf.huansanzhang == null
-		|| roomConf.zuidafanshu == null
-		|| roomConf.jushuxuanze == null
-		|| roomConf.dianganghua == null
-		|| roomConf.menqing == null
-		|| roomConf.tiandihu == null){
+	if( roomConf.type == null
+		|| roomConf.jushu == null
+		|| roomConf.xiqian == null
+		|| roomConf.sanqing == null
+		|| roomConf.beishu == null
+		|| roomConf.AA == null){
+
 		callback(1,null);
 		return;
 	}
 
-	if(roomConf.difen < 0 || roomConf.difen > DI_FEN.length){
-		callback(1,null);
-		return;
-	}
-
-	if(roomConf.zimo < 0 || roomConf.zimo > 2){
-		callback(1,null);
-		return;
-	}
-
-	if(roomConf.zuidafanshu < 0 || roomConf.zuidafanshu > MAX_FAN.length){
+	if(roomConf.beishu < 0 || roomConf.beishu > BEI_SHU.length){
 		callback(1,null);
 		return;
 	}
@@ -111,16 +98,13 @@ exports.createRoom = function(creator,roomConf,gems,ip,port,callback){
 		var roomId = generateRoomId();
 		if(rooms[roomId] != null || creatingRooms[roomId] != null){
 			fnCreate();
-		}
-		else{
+		} else{
 			creatingRooms[roomId] = true;
 			db.is_room_exist(roomId, function(ret) {
-
 				if(ret){
 					delete creatingRooms[roomId];
 					fnCreate();
-				}
-				else{
+				} else{
 					var createTime = Math.ceil(Date.now()/1000);
 					var roomInfo = {
 						uuid:"",
@@ -131,44 +115,28 @@ exports.createRoom = function(creator,roomConf,gems,ip,port,callback){
 						seats:[],
 						conf:{
 							type:roomConf.type,
-							baseScore:DI_FEN[roomConf.difen],
-						    zimo:roomConf.zimo,
-						    jiangdui:roomConf.jiangdui,
-						    hsz:roomConf.huansanzhang,
-						    dianganghua:parseInt(roomConf.dianganghua),
-						    menqing:roomConf.menqing,
-						    tiandihu:roomConf.tiandihu,
-						    maxFan:MAX_FAN[roomConf.zuidafanshu],
-						    maxGames:JU_SHU[roomConf.jushuxuanze],
+						    xiqian:roomConf.xiqian,
+						    sanqing:roomConf.sanqing,
+						    AA:roomConf.AA,
+							baseScore:BEI_SHU[roomConf.beishu],
+							maxGames:JU_SHU[roomConf.jushuxuanze],
 						    creator:creator,
 						}
 					};
 					
-					if(roomConf.type == "xlch"){
-						roomInfo.gameMgr = require("./gamemgr_xlch");
-					}
-					else{
-						roomInfo.gameMgr = require("./gamemgr_xzdd");
-					}
+					roomInfo.gameMgr = require("./gamemgr_biji");
 					console.log(roomInfo.conf);
 					
-					for(var i = 0; i < 4; ++i){
+					for(var i = 0; i < 5; ++i){
 						roomInfo.seats.push({
 							userId:0,
 							score:0,
 							name:"",
 							ready:false,
 							seatIndex:i,
-							numZiMo:0,
-							numJiePao:0,
-							numDianPao:0,
-							numAnGang:0,
-							numMingGang:0,
-							numChaJiao:0,
 						});
 					}
 					
-
 					//写入数据库
 					var conf = roomInfo.conf;
 					db.create_room(roomInfo.id,roomInfo.conf,ip,port,createTime,function(uuid){
@@ -198,7 +166,7 @@ exports.destroy = function(roomId){
 		return;
 	}
 
-	for(var i = 0; i < 4; ++i){
+	for(var i = 0; i < 5; ++i){
 		var userId = roomInfo.seats[i].userId;
 		if(userId > 0){
 			delete userLocation[userId];
@@ -234,7 +202,7 @@ exports.enterRoom = function(roomId,userId,userName,callback){
 			return 0;
 		}
 
-		for(var i = 0; i < 4; ++i){
+		for(var i = 0; i < 5; ++i){
 			var seat = room.seats[i];
 			if(seat.userId <= 0){
 				seat.userId = userId;
@@ -325,7 +293,6 @@ exports.getUserRoom = function(userId){
 
 exports.getUserSeat = function(userId){
 	var location = userLocation[userId];
-	//console.log(userLocation[userId]);
 	if(location != null){
 		return location.seatIndex;
 	}

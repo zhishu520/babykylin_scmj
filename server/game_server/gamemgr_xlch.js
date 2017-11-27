@@ -1075,6 +1075,8 @@ function recordGameAction(game,si,action,pai){
 }
 
 exports.setReady = function(userId,callback){
+    // TODO 少人也可以玩
+
     var roomId = roomMgr.getUserRoom(userId);
     if(roomId == null){
         return;
@@ -1088,6 +1090,21 @@ exports.setReady = function(userId,callback){
 
     var game = games[roomId];
     if(game == null){
+        if(roomInfo.creator == userId){
+            for(var i = 0; i < roomInfo.seats.length; ++i){
+                var s = roomInfo.seats[i];
+
+                if(s.userId <= 0)
+                    continue;
+
+                if(s.ready == false || userMgr.isOnline(s.userId)==false){
+                    return;
+                }
+            }
+            exports.begin(roomId);
+        }
+
+        /*
         if(roomInfo.seats.length == 4){
             for(var i = 0; i < roomInfo.seats.length; ++i){
                 var s = roomInfo.seats[i];
@@ -1097,9 +1114,9 @@ exports.setReady = function(userId,callback){
             }
             //4个人到齐了，并且都准备好了，则开始新的一局
             exports.begin(roomId);
-        }
-    }
-    else{
+        }*/
+
+    } else{
         var numOfMJ = game.mahjongs.length - game.currentIndex;
         var remainingGames = roomInfo.conf.maxGames - roomInfo.numOfGames;
 
