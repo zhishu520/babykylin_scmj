@@ -22,10 +22,12 @@ app.all('*', function(req, res, next) {
 });
 
 app.get('/get_server_info',function(req,res){
+    console.log("/get_server_info");
 	var serverId = req.query.serverid;
 	var sign = req.query.sign;
 	console.log(serverId);
 	console.log(sign);
+	console.log(config.SERVER_ID);
 	if(serverId  != config.SERVER_ID || sign == null){
 		http.send(res,1,"invalid parameters");
 		return;
@@ -48,6 +50,7 @@ app.get('/get_server_info',function(req,res){
 });
 
 app.get('/create_room',function(req,res){
+    console.log("/create_room");
 	var userId = parseInt(req.query.userid);
 	var sign = req.query.sign;
 	var gems = req.query.gems;
@@ -68,15 +71,16 @@ app.get('/create_room',function(req,res){
 	roomMgr.createRoom(userId,conf,gems,serverIp,config.CLIENT_PORT,function(errcode,roomId){
 		if(errcode != 0 || roomId == null){
 			http.send(res,errcode,"create failed.");
-			return;	
+			return;
 		}
 		else{
-			http.send(res,0,"ok",{roomid:roomId});			
+			http.send(res,0,"ok",{roomid:roomId});
 		}
 	});
 });
 
 app.get('/enter_room',function(req,res){
+    console.log("/enter_room");
 	var userId = parseInt(req.query.userid);
 	var name = req.query.name;
 	var roomId = req.query.roomid;
@@ -102,8 +106,8 @@ app.get('/enter_room',function(req,res){
 			}
 			else if(ret == 2){
 				http.send(res,3,"can't find room.");
-			}	
-			return;		
+			}
+			return;
 		}
 
 		var token = tokenMgr.createToken(userId,5000);
@@ -121,6 +125,7 @@ app.get('/ping',function(req,res){
 });
 
 app.get('/is_room_runing',function(req,res){
+    console.log("/is_room_runing");
 	var roomId = req.query.roomid;
 	var sign = req.query.sign;
 	if(roomId == null || sign == null){
@@ -133,7 +138,7 @@ app.get('/is_room_runing',function(req,res){
 		http.send(res,2,"sign check failed.");
 		return;
 	}
-	
+
 	//var roomInfo = roomMgr.getRoom(roomId);
 	http.send(res,0,"ok",{runing:true});
 });
@@ -151,7 +156,7 @@ function update(){
 				if(data.errcode != 0){
 					console.log(data.errmsg);
 				}
-				
+
 				if(data.ip != null){
 					serverIp = data.ip;
 				}
@@ -163,9 +168,9 @@ function update(){
 		});
 
 		var mem = process.memoryUsage();
-		var format = function(bytes) {  
-              return (bytes/1024/1024).toFixed(2)+'MB';  
-        }; 
+		var format = function(bytes) {
+              return (bytes/1024/1024).toFixed(2)+'MB';
+        };
 		//console.log('Process: heapTotal '+format(mem.heapTotal) + ' heapUsed ' + format(mem.heapUsed) + ' rss ' + format(mem.rss));
 	}
 }

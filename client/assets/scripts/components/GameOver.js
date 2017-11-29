@@ -28,11 +28,8 @@ cc.Class({
         if(cc.vv.gameNetMgr.conf == null){
             return;
         }
-        if(cc.vv.gameNetMgr.conf.type == "xzdd"){
+        if(cc.vv.gameNetMgr.conf.type == "biji"){
             this._gameover = this.node.getChildByName("game_over");
-        }
-        else{
-            this._gameover = this.node.getChildByName("game_over_xlch");
         }
         
         this._gameover.active = false;

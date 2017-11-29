@@ -18,9 +18,9 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-
         this._gamelist = this.node.getChildByName('game_list');
 
+        /* 游戏类型
         this._leixingxuanze = [];
         var t = this.node.getChildByName("leixingxuanze");
         for (var i = 0; i < t.childrenCount; ++i) {
@@ -28,7 +28,7 @@ cc.Class({
             if (n != null) {
                 this._leixingxuanze.push(n);
             }
-        }
+        }*/
     },
 
     onBtnBack: function () {
@@ -36,7 +36,7 @@ cc.Class({
     },
 
     onBtnOK: function () {
-        var usedTypes = ['xzdd', 'xlch'];
+        var usedTypes = ['biji'];
         var type = this.getType();
         if (usedTypes.indexOf(type) == -1) {
             return;
@@ -47,20 +47,7 @@ cc.Class({
     },
 
     getType: function () {
-        var type = 0;
-        for (var i = 0; i < this._leixingxuanze.length; ++i) {
-            if (this._leixingxuanze[i].checked) {
-                type = i;
-                break;
-            }
-        }
-        if (type == 0) {
-            return 'xzdd';
-        }
-        else if (type == 1) {
-            return 'xlch';
-        }
-        return 'xzdd';
+        return 'biji';
     },
 
     getSelectedOfRadioGroup(groupRoot) {
@@ -91,7 +78,7 @@ cc.Class({
                 cc.vv.wc.hide();
                 //console.log(ret.errmsg);
                 if (ret.errcode == 2222) {
-                    cc.vv.alert.show("提示", "钻石不足，创建房间失败!");
+                    cc.vv.alert.show("提示", "房卡不足，创建房间失败!");
                 }
                 else {
                     cc.vv.alert.show("提示", "创建房间失败,错误码:" + ret.errcode);
@@ -104,10 +91,7 @@ cc.Class({
 
         var type = this.getType();
         var conf = null;
-        if (type == 'xzdd') {
-            conf = this.constructSCMJConf();
-        }
-        else if (type == 'xlch') {
+        if (type == 'biji') {
             conf = this.constructSCMJConf();
         }
         conf.type = type;
@@ -124,28 +108,25 @@ cc.Class({
 
     constructSCMJConf: function () {
 
-        var wanfaxuanze = this._currentGame.getChildByName('wanfaxuanze');
-        var huansanzhang = wanfaxuanze.children[0].getComponent('CheckBox').checked;
-        var jiangdui = wanfaxuanze.children[1].getComponent('CheckBox').checked;
-        var menqing = wanfaxuanze.children[2].getComponent('CheckBox').checked;
-        var tiandihu = wanfaxuanze.children[3].getComponent('CheckBox').checked;
+        // var wanfaxuanze = this._currentGame.getChildByName('wanfaxuanze');
+        // var huansanzhang = wanfaxuanze.children[0].getComponent('CheckBox').checked;
+        // var jiangdui = wanfaxuanze.children[1].getComponent('CheckBox').checked;
+        // var menqing = wanfaxuanze.children[2].getComponent('CheckBox').checked;
+        // var tiandihu = wanfaxuanze.children[3].getComponent('CheckBox').checked;
 
-        var difen = this.getSelectedOfRadioGroup('difenxuanze');
-        var zimo = this.getSelectedOfRadioGroup('zimojiacheng');
-        var zuidafanshu = this.getSelectedOfRadioGroup('zuidafanshu');
-        var jushuxuanze = this.getSelectedOfRadioGroup('xuanzejushu');
-        var dianganghua = this.getSelectedOfRadioGroup('dianganghua');
+        var xiqian = this.getSelectedOfRadioGroup('xiqian');
+        var sanqing = this.getSelectedOfRadioGroup('sanqing');
+        var AA = this.getSelectedOfRadioGroup('AA');
+        var beishu = this.getSelectedOfRadioGroup('beishu');
+        var jushuxuanze = this.getSelectedOfRadioGroup('jushuxuanze');
         
         var conf = {
-            difen:difen,
-            zimo:zimo,
-            jiangdui:jiangdui,
-            huansanzhang:huansanzhang,
-            zuidafanshu:zuidafanshu,
+            type:"biji",
+            xiqian:xiqian == 0? false: true,
+            sanqing:sanqing == 0? false: true,
+            AA:AA == 0? false: true,
+            beishu:beishu,
             jushuxuanze:jushuxuanze,
-            dianganghua:dianganghua,
-            menqing:menqing,
-            tiandihu:tiandihu,   
         };
         return conf;
     },

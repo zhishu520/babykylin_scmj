@@ -7,9 +7,10 @@ var userMgr = require('./usermgr');
 var io = null;
 exports.start = function(config,mgr){
 	io = require('socket.io')(config.CLIENT_PORT);
-	
+
 	io.sockets.on('connection',function(socket){
 		socket.on('login',function(data){
+            console.log("connection -- -1");
 			data = JSON.parse(data);
 			if(socket.userId != null){
 				//已经登陆过的就忽略
@@ -24,15 +25,16 @@ exports.start = function(config,mgr){
 			console.log(token);
 			console.log(time);
 			console.log(sign);
+            console.log("connection -- 0");
 
-			
+
 			//检查参数合法性
 			if(token == null || roomId == null || sign == null || time == null){
 				console.log(1);
 				socket.emit('login_result',{errcode:1,errmsg:"invalid parameters"});
 				return;
 			}
-			
+
 			//检查参数是否被篡改
 			var md5 = crypto.md5(roomId + token + time + config.ROOM_PRI_KEY);
 			if(md5 != sign){
@@ -40,14 +42,14 @@ exports.start = function(config,mgr){
 				socket.emit('login_result',{errcode:2,errmsg:"login failed. invalid sign!"});
 				return;
 			}
-			
+
 			//检查token是否有效
 			if(tokenMgr.isTokenValid(token)==false){
 				console.log(3);
 				socket.emit('login_result',{errcode:3,errmsg:"token out of time."});
 				return;
 			}
-			
+
 			//检查房间合法性
 			var userId = tokenMgr.getUserID(token);
 			var roomId = roomMgr.getUserRoom(userId);
@@ -55,9 +57,11 @@ exports.start = function(config,mgr){
 			userMgr.bind(userId,socket);
 			socket.userId = userId;
 
+            console.log("connection -- 1");
+
 			//返回房间信息
 			var roomInfo = roomMgr.getRoom(roomId);
-			
+
 			var seatIndex = roomMgr.getUserSeat(userId);
 			roomInfo.seats[seatIndex].ip = socket.handshake.address;
 
@@ -85,6 +89,8 @@ exports.start = function(config,mgr){
 				}
 			}
 
+            console.log("connection -- 2");
+
 			//通知前端
 			var ret = {
 				errcode:0,
@@ -98,15 +104,17 @@ exports.start = function(config,mgr){
 			};
 			socket.emit('login_result',ret);
 
+            console.log("connection -- 3");
 			//通知其它客户端
 			userMgr.broacastInRoom('new_user_comes_push',userData,userId);
-			
+
 			socket.gameMgr = roomInfo.gameMgr;
 
 			//玩家上线，强制设置为TRUE
 			socket.gameMgr.setReady(userId);
 
 			socket.emit('login_finished');
+            console.log("connection -- 4");
 
 			if(roomInfo.dr != null){
 				var dr = roomInfo.dr;
@@ -115,8 +123,10 @@ exports.start = function(config,mgr){
 					time:ramaingTime,
 					states:dr.states
 				}
-				userMgr.sendMsg(userId,'dissolve_notice_push',data);	
+				userMgr.sendMsg(userId,'dissolve_notice_push',data);
 			}
+
+            console.log("connection -- 5");
 		});
 
 		socket.on('ready',function(data){
@@ -128,38 +138,6 @@ exports.start = function(config,mgr){
 			userMgr.broacastInRoom('user_ready_push',{userid:userId,ready:true},userId,true);
 		});
 
-		//换牌
-		socket.on('huanpai',function(data){
-			if(socket.userId == null){
-				return;
-			}
-			if(data == null){
-				return;
-			}
-
-			if(typeof(data) == "string"){
-				data = JSON.parse(data);
-			}
-
-			var p1 = data.p1;
-			var p2 = data.p2;
-			var p3 = data.p3;
-			if(p1 == null || p2 == null || p3 == null){
-				console.log("invalid data");
-				return;
-			}
-			socket.gameMgr.huanSanZhang(socket.userId,p1,p2,p3);
-		});
-
-		//定缺
-		socket.on('dingque',function(data){
-			if(socket.userId == null){
-				return;
-			}
-			var que = data;
-			socket.gameMgr.dingQue(socket.userId,que);
-		});
-
 		//出牌
 		socket.on('chupai',function(data){
 			if(socket.userId == null){
@@ -168,50 +146,7 @@ exports.start = function(config,mgr){
 			var pai = data;
 			socket.gameMgr.chuPai(socket.userId,pai);
 		});
-		
-		//碰
-		socket.on('peng',function(data){
-			if(socket.userId == null){
-				return;
-			}
-			socket.gameMgr.peng(socket.userId);
-		});
-		
-		//杠
-		socket.on('gang',function(data){
-			if(socket.userId == null || data == null){
-				return;
-			}
-			var pai = -1;
-			if(typeof(data) == "number"){
-				pai = data;
-			}
-			else if(typeof(data) == "string"){
-				pai = parseInt(data);
-			}
-			else{
-				console.log("gang:invalid param");
-				return;
-			}
-			socket.gameMgr.gang(socket.userId,pai);
-		});
-		
-		//胡
-		socket.on('hu',function(data){
-			if(socket.userId == null){
-				return;
-			}
-			socket.gameMgr.hu(socket.userId);
-		});
 
-		//过  遇上胡，碰，杠的时候，可以选择过
-		socket.on('guo',function(data){
-			if(socket.userId == null){
-				return;
-			}
-			socket.gameMgr.guo(socket.userId);
-		});
-		
 		//聊天
 		socket.on('chat',function(data){
 			if(socket.userId == null){
@@ -220,7 +155,7 @@ exports.start = function(config,mgr){
 			var chatContent = data;
 			userMgr.broacastInRoom('chat_push',{sender:socket.userId,content:chatContent},socket.userId,true);
 		});
-		
+
 		//快速聊天
 		socket.on('quick_chat',function(data){
 			if(socket.userId == null){
@@ -229,7 +164,7 @@ exports.start = function(config,mgr){
 			var chatId = data;
 			userMgr.broacastInRoom('quick_chat_push',{sender:socket.userId,content:chatId},socket.userId,true);
 		});
-		
+
 		//语音聊天
 		socket.on('voice_msg',function(data){
 			if(socket.userId == null){
@@ -238,7 +173,7 @@ exports.start = function(config,mgr){
 			console.log(data.length);
 			userMgr.broacastInRoom('voice_msg_push',{sender:socket.userId,content:data},socket.userId,true);
 		});
-		
+
 		//表情
 		socket.on('emoji',function(data){
 			if(socket.userId == null){
@@ -247,9 +182,9 @@ exports.start = function(config,mgr){
 			var phizId = data;
 			userMgr.broacastInRoom('emoji_push',{sender:socket.userId,content:phizId},socket.userId,true);
 		});
-		
+
 		//语音使用SDK不出现在这里
-		
+
 		//退出房间
 		socket.on('exit',function(data){
 			var userId = socket.userId;
@@ -271,17 +206,17 @@ exports.start = function(config,mgr){
 			if(roomMgr.isCreator(userId)){
 				return;
 			}
-			
+
 			//通知其它玩家，有人退出了房间
 			userMgr.broacastInRoom('exit_notify_push',userId,userId,false);
-			
+
 			roomMgr.exitRoom(userId);
 			userMgr.del(userId);
-			
+
 			socket.emit('exit_result');
 			socket.disconnect();
 		});
-		
+
 		//解散房间
 		socket.on('dispress',function(data){
 			var userId = socket.userId;
@@ -303,7 +238,7 @@ exports.start = function(config,mgr){
 			if(roomMgr.isCreator(roomId,userId) == false){
 				return;
 			}
-			
+
 			userMgr.broacastInRoom('dispress_push',{},userId,true);
 			userMgr.kickAllInRoom(roomId);
 			roomMgr.destroy(roomId);
@@ -376,7 +311,7 @@ exports.start = function(config,mgr){
 				}
 
 				if(doAllAgree){
-					socket.gameMgr.doDissolve(roomId);					
+					socket.gameMgr.doDissolve(roomId);
 				}
 			}
 		});
@@ -423,7 +358,7 @@ exports.start = function(config,mgr){
 			userMgr.del(userId);
 			socket.userId = null;
 		});
-		
+
 		socket.on('game_ping',function(data){
 			var userId = socket.userId;
 			if(!userId){
@@ -434,5 +369,5 @@ exports.start = function(config,mgr){
 		});
 	});
 
-	console.log("game server is listening on " + config.CLIENT_PORT);	
+	console.log("game server is listening on " + config.CLIENT_PORT);
 };
